@@ -1,0 +1,104 @@
+<!-- location-search.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Search - Zomato Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #E23744;
+            --secondary-color: #F5F5F5;
+            --text-color: #333333;
+        }
+        body { 
+            background-color: var(--secondary-color); 
+            color: var(--text-color);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #C31C2D 100%);
+        }
+        .hover-lift {
+            transition: transform 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center p-4">
+            <div class="flex items-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.png" alt="Zomato Logo" class="h-10 mr-4">
+                <h1 class="text-2xl font-bold text-gray-800">Restaurant Explorer</h1>
+            </div>
+            <div class="space-x-4">
+                <a href="restaurants.html" class="text-gray-700 hover:text-primary-color transition">Restaurants</a>
+                <a href="location-search.html" class="text-gray-700 hover:text-primary-color transition">Location Search</a>
+                <a href="image-search.html" class="text-gray-700 hover:text-primary-color transition">Image Search</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mx-auto mt-8 px-4">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-6">Location Search</h2>
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="grid grid-cols-2 gap-4">
+                <input type="number" id="latitude" placeholder="Latitude" class="p-2 border rounded">
+                <input type="number" id="longitude" placeholder="Longitude" class="p-2 border rounded">
+                <input type="number" id="radius" placeholder="Radius (km)" class="p-2 border rounded">
+                <button onclick="searchByLocation()" class="bg-red-600 text-white p-2 rounded hover:bg-red-700">
+                    Search Nearby Restaurants
+                </button>
+            </div>
+            <div id="location-results" class="mt-6">
+                <!-- Location search results will be populated here -->
+            </div>
+        </div>
+        <!-- Back to Home Button -->
+        <div class="fixed bottom-4 left-4 z-50">
+            <a href="home.html"
+                class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path
+                        d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                Back to Home
+            </a>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        // Location Search
+        async function searchByLocation() {
+            const latitude = document.getElementById('latitude').value;
+            const longitude = document.getElementById('longitude').value;
+            const radius = document.getElementById('radius').value;
+
+            try {
+                const response = await fetch(`/api/location-search?lat=${latitude}&lon=${longitude}&radius=${radius}`);
+                const restaurants = await response.json();
+                renderLocationResults(restaurants);
+            } catch (error) {
+                console.error('Location search error:', error);
+            }
+        }
+
+        function renderLocationResults(restaurants) {
+            const resultsContainer = document.getElementById('location-results');
+            resultsContainer.innerHTML = restaurants.map(restaurant => `
+                <div class="bg-gray-100 p-4 rounded mb-2">
+                    <h3 class="font-bold">${restaurant.name}</h3>
+                    <p>Distance: ${restaurant.distance} km</p>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

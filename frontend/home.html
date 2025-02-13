@@ -1,0 +1,89 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zomato Restaurant Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #E23744;
+            --secondary-color: #F5F5F5;
+            --text-color: #333333;
+        }
+        body { 
+            background-color: var(--secondary-color); 
+            color: var(--text-color);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #C31C2D 100%);
+        }
+        .hover-lift {
+            transition: transform 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center p-4">
+            <div class="flex items-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.png" alt="Zomato Logo" class="h-10 mr-4">
+                <h1 class="text-2xl font-bold text-gray-800">Restaurant Explorer</h1>
+            </div>
+            <div class="space-x-4">
+                <a href="restaurants.html" class="text-gray-700 hover:text-primary-color transition">Restaurants</a>
+                <a href="location-search.html" class="text-gray-700 hover:text-primary-color transition">Location Search</a>
+                <a href="image-search.html" class="text-gray-700 hover:text-primary-color transition">Image Search</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="gradient-bg text-white py-16 text-center">
+        <div class="container mx-auto px-4">
+            <h1 class="text-4xl font-bold mb-4">Discover Amazing Restaurants</h1>
+            <p class="text-xl mb-8 text-white/90">Explore cuisines, read reviews, and find your next favorite dining spot</p>
+            <div class="max-w-xl mx-auto flex">
+                <input type="text" placeholder="Search restaurants, cuisines..." 
+                       class="flex-grow px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-color">
+                       <button class="bg-red-500 text-white px-6 py-3 rounded-r-lg hover:bg-red-600 transition">
+                        Search
+                    </button>
+            </div>
+        </div>
+    </header>
+
+   <!-- Main Content -->
+   <main class="container mx-auto px-4 py-12">
+    <section class="grid md:grid-cols-3 gap-8">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center hover-lift">
+            <svg class="w-16 h-16 mx-auto mb-4 text-primary-color" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+            </svg>
+            <h3 class="text-2xl font-semibold mb-4 text-gray-800">Verified Restaurants</h3>
+            <p class="text-gray-600">Carefully curated and verified restaurants for the best dining experience</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center hover-lift">
+            <svg class="w-16 h-16 mx-auto mb-4 text-primary-color" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h3 class="text-2xl font-semibold mb-4 text-gray-800">Best Prices</h3>
+            <p class="text-gray-600">Competitive pricing and exclusive deals for budget-conscious diners</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center hover-lift">
+            <svg class="w-16 h-16 mx-auto mb-4 text-primary-color" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h3 class="text-2xl font-semibold mb-4 text-gray-800">Easy Booking</h3>
+            <p class="text-gray-600">Simple and intuitive interface for quick restaurant reservations</p>
+        </div>
+    </section>
+</main>
+</body>
+</html>

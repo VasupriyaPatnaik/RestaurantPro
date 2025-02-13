@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zomato Restaurant Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #E23744;
+            --secondary-color: #F5F5F5;
+            --text-color: #333333;
+        }
+        body { 
+            background-color: var(--secondary-color); 
+            color: var(--text-color);
+        }
+        .page { display: none; }
+        .active-page { display: block; }
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #C31C2D 100%);
+        }
+        .hover-lift {
+            transition: transform 0.3s ease;
+        }
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center p-4">
+            <div class="flex items-center">
+                <!-- Zomato Logo -->
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.png" alt="Zomato Logo" class="h-10 mr-4">
+                <h1 class="text-2xl font-bold text-gray-800">Restaurant Explorer</h1>
+            </div>
+            <div class="space-x-4">
+                <button onclick="showPage('restaurant-list')" class="text-gray-700 hover:text-primary-color transition">Restaurants</button>
+                <button onclick="showPage('location-search')" class="text-gray-700 hover:text-primary-color transition">Location Search</button>
+                <button onclick="showPage('image-search')" class="text-gray-700 hover:text-primary-color transition">Image Search</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="gradient-bg text-white py-16 text-center">
+        <div class="container mx-auto px-4">
+            <h1 class="text-4xl font-bold mb-4">Discover Amazing Restaurants</h1>
+            <p class="text-xl mb-8 text-white/90">Explore cuisines, read reviews, and find your next favorite dining spot</p>
+            <div class="max-w-xl mx-auto flex">
+                <input type="text" placeholder="Search restaurants, cuisines..." 
+                       class="flex-grow px-4 py-3 rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-color">
+                <button class="bg-white text-primary-color px-6 py-3 rounded-r-lg hover:bg-gray-100 transition">
+                    Search
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+        <section class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-lg shadow-lg text-center hover-lift">
+                <svg class="w-16 h-16 mx-auto mb-4 text-primary-color" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                </svg>
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Verified Restaurants</h3>
+                <p class="text-gray-600">Carefully curated and verified restaurants for the best dining experience</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg text-center hover-lift">
+                <svg class="w-16 h-16 mx-auto mb-4 text-primary-color" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Best Prices</h3>
+                <p class="text-gray-600">Competitive pricing and exclusive deals for budget-conscious diners</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-lg text-center hover-lift">
+                <svg class="w-16 h-16 mx-auto mb-4 text-primary-color" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h3 class="text-2xl font-semibold mb-4 text-gray-800">Easy Booking</h3>
+                <p class="text-gray-600">Simple and intuitive interface for quick restaurant reservations</p>
+            </div>
+        </section>
+    </main>
+
+   <!-- Restaurant List Page -->
+   <div id="restaurant-list" class="page active-page container mx-auto mt-8 px-4">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-semibold text-gray-800">Restaurants</h2>
+        <input type="text" id="search-restaurant" placeholder="Search restaurants..." 
+               class="p-2 border rounded w-1/3">
+    </div>
+
+    <div id="restaurants-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Restaurants will be dynamically populated here -->
+    </div>
+
+    <div class="flex justify-center mt-8">
+        <div id="pagination" class="inline-flex space-x-2">
+            <!-- Pagination buttons will be dynamically added -->
+        </div>
+    </div>
+</div>
+
+<!-- Restaurant Detail Page -->
+<div id="restaurant-detail" class="page container mx-auto mt-8 px-4">
+    <div id="restaurant-detail-content" class="bg-white p-6 rounded-lg shadow-md">
+        <!-- Restaurant details will be dynamically populated -->
+    </div>
+</div>
+
+<!-- Location Search Page -->
+<div id="location-search" class="page container mx-auto mt-8 px-4">
+    <h2 class="text-3xl font-semibold text-gray-800 mb-6">Location Search</h2>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <div class="grid grid-cols-2 gap-4">
+            <input type="number" id="latitude" placeholder="Latitude" class="p-2 border rounded">
+            <input type="number" id="longitude" placeholder="Longitude" class="p-2 border rounded">
+            <input type="number" id="radius" placeholder="Radius (km)" class="p-2 border rounded">
+            <button onclick="searchByLocation()" class="bg-red-600 text-white p-2 rounded hover:bg-red-700">
+                Search Nearby Restaurants
+            </button>
+        </div>
+        <div id="location-results" class="mt-6">
+            <!-- Location search results will be populated here -->
+        </div>
+    </div>
+</div>
+
+<!-- Image Search Page -->
+<div id="image-search" class="page container mx-auto mt-8 px-4">
+    <h2 class="text-3xl font-semibold text-gray-800 mb-6">Image Search</h2>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <input type="file" id="cuisine-image" accept="image/*" class="mb-4">
+        <button onclick="searchByCuisineImage()" class="bg-red-600 text-white p-2 rounded hover:bg-red-700">
+            Search by Food Image
+        </button>
+        <div id="image-search-results" class="mt-6">
+            <!-- Image search results will be populated here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Page Navigation
+    function showPage(pageId) {
+        // Hide all pages
+        ['restaurant-list', 'restaurant-detail', 'location-search', 'image-search']
+            .forEach(id => document.getElementById(id).classList.remove('active-page'));
+        
+        // Show selected page
+        document.getElementById(pageId).classList.add('active-page');
+    }
+
+    // Restaurant Listing
+    async function fetchRestaurants(page = 1, searchQuery = '') {
+        try {
+            const response = await fetch(`/api/restaurants?page=${page}&search=${searchQuery}`);
+            const data = await response.json();
+            renderRestaurants(data.restaurants);
+            renderPagination(data.totalPages, page);
+        } catch (error) {
+            console.error('Error fetching restaurants:', error);
+        }
+    }
+
+    function renderRestaurants(restaurants) {
+        const grid = document.getElementById('restaurants-grid');
+        grid.innerHTML = '';
+        
+        restaurants.forEach(restaurant => {
+            const card = document.createElement('div');
+            card.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'overflow-hidden', 'cursor-pointer');
+            card.innerHTML = `
+                <img src="${restaurant.image}" alt="${restaurant.name}" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-bold">${restaurant.name}</h3>
+                    <p class="text-gray-600">${restaurant.cuisine}</p>
+                    <div class="mt-2 flex justify-between">
+                        <span class="text-green-600">${restaurant.status}</span>
+                        <span class="text-gray-500">₹${restaurant.avgCost} for two</span>
+                    </div>
+                </div>
+            `;
+            card.onclick = () => fetchRestaurantDetails(restaurant.id);
+            grid.appendChild(card);
+        });
+    }
+
+    function renderPagination(totalPages, currentPage) {
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+        
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.classList.add(
+                'px-4', 'py-2', 
+                i === currentPage ? 'bg-red-600 text-white' : 'bg-white text-red-600',
+                'border', 'rounded'
+            );
+            pageButton.onclick = () => fetchRestaurants(i);
+            pagination.appendChild(pageButton);
+        }
+    }
+
+    // Restaurant Details
+    async function fetchRestaurantDetails(restaurantId) {
+        try {
+            const response = await fetch(`/api/restaurant/${restaurantId}`);
+            const restaurant = await response.json();
+            renderRestaurantDetails(restaurant);
+            showPage('restaurant-detail');
+        } catch (error) {
+            console.error('Error fetching restaurant details:', error);
+        }
+    }
+
+    function renderRestaurantDetails(restaurant) {
+        const detailContent = document.getElementById('restaurant-detail-content');
+        detailContent.innerHTML = `
+            <h2 class="text-3xl font-bold mb-4">${restaurant.name}</h2>
+            <img src="${restaurant.image}" alt="${restaurant.name}" class="w-full h-64 object-cover rounded-lg mb-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <h3 class="font-semibold">Cuisine</h3>
+                    <p>${restaurant.cuisine}</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold">Average Cost</h3>
+                    <p>₹${restaurant.avgCost} for two</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold">Address</h3>
+                    <p>${restaurant.address}</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold">Contact</h3>
+                    <p>${restaurant.phone}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    // Location Search
+    async function searchByLocation() {
+        const latitude = document.getElementById('latitude').value;
+        const longitude = document.getElementById('longitude').value;
+        const radius = document.getElementById('radius').value;
+
+        try {
+            const response = await fetch(`/api/location-search?lat=${latitude}&lon=${longitude}&radius=${radius}`);
+            const restaurants = await response.json();
+            renderLocationResults(restaurants);
+        } catch (error) {
+            console.error('Location search error:', error);
+        }
+    }
+
+    function renderLocationResults(restaurants) {
+        const resultsContainer = document.getElementById('location-results');
+        resultsContainer.innerHTML = restaurants.map(restaurant => `
+            <div class="bg-gray-100 p-4 rounded mb-2">
+                <h3 class="font-bold">${restaurant.name}</h3>
+                <p>Distance: ${restaurant.distance} km</p>
+            </div>
+        `).join('');
+    }
+
+    // Image Search
+    async function searchByCuisineImage() {
+        const imageFile = document.getElementById('cuisine-image').files[0];
+        const formData = new FormData();
+        formData.append('image', imageFile);
+
+        try {
+            const response = await fetch('/api/image-search', {
+                method: 'POST',
+                body: formData
+            });
+            const restaurants = await response.json();
+            renderImageSearchResults(restaurants);
+        } catch (error) {
+            console.error('Image search error:', error);
+        }
+    }
+
+    function renderImageSearchResults(restaurants) {
+        const resultsContainer = document.getElementById('image-search-results');
+        resultsContainer.innerHTML = restaurants.map(restaurant => `
+            <div class="bg-gray-100 p-4 rounded mb-2">
+                <h3 class="font-bold">${restaurant.name}</h3>
+                <p>Matching Cuisine: ${restaurant.matchedCuisine}</p>
+            </div>
+        `).join('');
+    }
+
+    // Initial load of restaurants
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchRestaurants();
+        
+        // Search input event listener
+        document.getElementById('search-restaurant').addEventListener('input', (e) => {
+            fetchRestaurants(1, e.target.value);
+        });
+    });
+</script>
+</body>
+</html>

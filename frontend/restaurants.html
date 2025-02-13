@@ -1,0 +1,199 @@
+<!-- restaurants.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurants - Zomato Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #E23744;
+            --secondary-color: #F5F5F5;
+            --text-color: #333333;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #C31C2D 100%);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center p-4">
+            <div class="flex items-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.png" alt="Zomato Logo"
+                    class="h-10 mr-4">
+                <h1 class="text-2xl font-bold text-gray-800">Restaurant Explorer</h1>
+            </div>
+            <div class="space-x-4">
+                <a href="restaurants.html" class="text-gray-700 hover:text-primary-color transition">Restaurants</a>
+                <a href="location-search.html" class="text-gray-700 hover:text-primary-color transition">Location
+                    Search</a>
+                <a href="image-search.html" class="text-gray-700 hover:text-primary-color transition">Image Search</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-8 px-4">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-semibold text-gray-800">Restaurants</h2>
+            <input type="text" id="search-restaurant" placeholder="Search restaurants..."
+                class="p-2 border rounded w-1/3">
+        </div>
+
+        <div id="restaurants-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Restaurant Card 1 -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cmVzdGF1cmFudHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"
+                    alt="Bistro Moderne" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-bold mb-2">Bistro Moderne</h3>
+                    <div class="flex items-center mb-2">
+                        <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <span class="text-gray-600">4.5 (230 reviews)</span>
+                    </div>
+                    <p class="text-gray-500 mb-4">Modern French cuisine • $$</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-green-600 font-semibold">Open Now</span>
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition">
+                            View Menu
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Restaurant Card 2 -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
+                    alt="Sushi Sanctuary" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-bold mb-2">Sushi Sanctuary</h3>
+                    <div class="flex items-center mb-2">
+                        <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <span class="text-gray-600">4.8 (450 reviews)</span>
+                    </div>
+                    <p class="text-gray-500 mb-4">Japanese • Premium Sushi • $$$</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-green-600 font-semibold">Open Now</span>
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition">
+                            View Menu
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Restaurant Card 3 -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cmVzdGF1cmFudHxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80"
+                    alt="Pizzeria Napoli" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-xl font-bold mb-2">Pizzeria Napoli</h3>
+                    <div class="flex items-center mb-2">
+                        <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                        <span class="text-gray-600">4.3 (180 reviews)</span>
+                    </div>
+                    <p class="text-gray-500 mb-4">Italian • Authentic Pizza • $$</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-red-600 font-semibold">Closes Soon</span>
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition">
+                            View Menu
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Back to Home Button -->
+            <div class="fixed bottom-4 left-4 z-50">
+                <a href="home.html"
+                    class="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path
+                            d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                    Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="flex justify-center mt-8">
+        <div id="pagination" class="inline-flex space-x-2">
+            <!-- Pagination buttons will be dynamically added -->
+        </div>
+    </div>
+    </div>
+
+    <script>
+        async function fetchRestaurants(page = 1, searchQuery = '') {
+            try {
+                const response = await fetch(`/api/restaurants?page=${page}&search=${searchQuery}`);
+                const data = await response.json();
+                renderRestaurants(data.restaurants);
+                renderPagination(data.totalPages, page);
+            } catch (error) {
+                console.error('Error fetching restaurants:', error);
+            }
+        }
+
+        function renderRestaurants(restaurants) {
+            const grid = document.getElementById('restaurants-grid');
+            grid.innerHTML = '';
+
+            restaurants.forEach(restaurant => {
+                const card = document.createElement('div');
+                card.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'overflow-hidden', 'cursor-pointer');
+                card.innerHTML = `
+                    <img src="${restaurant.image}" alt="${restaurant.name}" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold">${restaurant.name}</h3>
+                        <p class="text-gray-600">${restaurant.cuisine}</p>
+                        <div class="mt-2 flex justify-between">
+                            <span class="text-green-600">${restaurant.status}</span>
+                            <span class="text-gray-500">₹${restaurant.avgCost} for two</span>
+                        </div>
+                    </div>
+                `;
+                card.onclick = () => window.location.href = `restaurant-detail.html?id=${restaurant.id}`;
+                grid.appendChild(card);
+            });
+        }
+
+        // Rest of the JavaScript functions remain the same
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchRestaurants();
+
+            document.getElementById('search-restaurant').addEventListener('input', (e) => {
+                fetchRestaurants(1, e.target.value);
+            });
+        });
+    </script>
+</body>
+
+</html>
