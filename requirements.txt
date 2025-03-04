@@ -1,0 +1,10 @@
+Flask
+flask-cors
+pymongo
+python-dotenv
+google-generativeai
+Pillow
+Werkzeug
+numpy
+geopy
+pandas
