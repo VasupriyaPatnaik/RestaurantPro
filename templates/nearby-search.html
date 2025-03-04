@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestaurantPro - Location Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <!-- Leaflet Map CSS and JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #FF4D4D 0%, #F9CB28 100%);
+            --secondary-gradient: linear-gradient(135deg, #4158D0 0%, #C850C0 100%);
+            --accent-gradient: linear-gradient(135deg, #FBAB7E 0%, #F7CE68 100%);
+            --background-dark: #0A0B1E;
+            --card-bg: #151828;
+            --text-bright: #FFFFFF;
+            --text-dim: #8B8D9B;
+            --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            --hover-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            --glow: 0 0 20px rgba(255, 77, 77, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--background-dark);
+            color: var(--text-bright);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 10% 20%, rgba(65, 88, 208, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(200, 80, 192, 0.15) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .header {
+            background: rgba(21, 24, 40, 0.8);
+            backdrop-filter: blur(20px);
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 28px;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-shadow: var(--glow);
+        }
+
+        .logo:hover {
+            transform: scale(1.05) rotate(-2deg);
+            filter: brightness(1.2);
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-bright);
+            font-weight: 600;
+            transition: all 0.4s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
+        }
+
+        .nav-link:hover::before {
+            opacity: 1;
+        }
+
+        .search-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .search-card:hover {
+            box-shadow: var(--hover-shadow);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .search-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-bright);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: var(--glow);
+        }
+
+        .search-button {
+            background: var(--primary-gradient);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: var(--glow);
+        }
+
+        .restaurant-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .restaurant-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.8s ease;
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-16px);
+            box-shadow: var(--hover-shadow);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .restaurant-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .restaurant-link {
+            background: var(--primary-gradient);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .restaurant-link:hover {
+            transform: scale(1.05);
+            box-shadow: var(--glow);
+        }
+
+        .sort-btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sort-btn.active {
+            background: var(--primary-gradient) !important;
+            box-shadow: var(--glow);
+        }
+
+        .sort-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 1s ease-out;
+        }
+
+        /* Background animated elements */
+        .bg-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        .bg-element {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.1;
+            animation: float 6s infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .tab-btn {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+
+        /* Map styling */
+        .leaflet-container {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background Elements -->
+    <div class="bg-elements">
+        <div class="bg-element"
+            style="top: 20%; left: 10%; width: 300px; height: 300px; background: var(--primary-gradient); animation-delay: 0s;">
+        </div>
+        <div class="bg-element"
+            style="top: 60%; right: 15%; width: 250px; height: 250px; background: var(--secondary-gradient); animation-delay: -2s;">
+        </div>
+        <div class="bg-element"
+            style="bottom: 10%; left: 20%; width: 200px; height: 200px; background: var(--accent-gradient); animation-delay: -4s;">
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header py-4">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-between items-center">
+                <div class="logo">
+                    <i class="fas fa-utensils mr-2"></i>
+                    RestaurantPro
+                </div>
+                <nav class="hidden md:flex space-x-4">
+                    <a href="index.html" class="nav-link">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="nearby-search.html" class="nav-link">
+                        <i class="fas fa-map-marker-alt"></i> Search Nearby
+                    </a>
+                    <a href="image-search.html" class="nav-link">
+                        <i class="fas fa-camera"></i> Image Search
+                    </a>
+                    <a href="restaurant-list.html" class="nav-link">
+                        <i class="fas fa-list"></i> All Restaurants
+                    </a>
+                </nav>
+                <button class="md:hidden text-white text-2xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24">
+        <div class="container mx-auto px-6 py-8">
+            <div class="max-w-6xl mx-auto">
+                <!-- Title Section -->
+                <div class="text-center mb-12 fade-in-up">
+                    <h2 class="text-5xl font-bold mb-4"
+                        style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: var(--glow);">
+                        Find Your Perfect Dining Spot
+                    </h2>
+                    <p class="text-xl text-gray-400 max-w-3xl mx-auto">Discover amazing restaurants near any location -
+                        search by coordinates or simply enter a place name</p>
+                </div>
+
+                <!-- Search Tabs -->
+                <div class="mb-8 fade-in-up">
+                    <div class="flex justify-center space-x-8 mb-6">
+                        <button id="coordsTabBtn" class="tab-btn active text-xl font-semibold px-4 py-2 text-white">
+                            <i class="fas fa-map-pin mr-2"></i> Search by Coordinates
+                        </button>
+                        <button id="locationTabBtn" class="tab-btn text-xl font-semibold px-4 py-2 text-gray-400">
+                            <i class="fas fa-search-location mr-2"></i> Search by Location
+                        </button>
+                    </div>
+
+                    <!-- Search Forms Container -->
+                    <div class="search-card p-8 mb-8">
+                        <!-- Coordinates Search Form -->
+                        <form id="coordsSearchForm" class="grid md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-gray-400 mb-3 text-lg">Latitude & Longitude</label>
+                                <div class="flex space-x-4">
+                                    <div class="flex-1">
+                                        <div class="flex items-center search-input rounded-xl p-2">
+                                            <i class="fas fa-map-marker-alt text-yellow-400 ml-3"></i>
+                                            <input type="number" id="latitude" step="0.000001" placeholder="Latitude"
+                                                class="w-full bg-transparent border-none focus:outline-none text-white px-4 py-3">
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center search-input rounded-xl p-2">
+                                            <i class="fas fa-map-marker-alt text-yellow-400 ml-3"></i>
+                                            <input type="number" id="longitude" step="0.000001" placeholder="Longitude"
+                                                class="w-full bg-transparent border-none focus:outline-none text-white px-4 py-3">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Radius Input -->
+                            <div>
+                                <label class="block text-gray-400 mb-3 text-lg">Search Radius (km)</label>
+                                <div class="flex items-center search-input rounded-xl p-2">
+                                    <i class="fas fa-circle-dot text-yellow-400 ml-3"></i>
+                                    <input type="number" id="coordRadius" min="0.1" max="50" step="0.1" value="5"
+                                        class="w-full bg-transparent border-none focus:outline-none text-white px-4 py-3">
+                                </div>
+                            </div>
+
+                            <!-- Search Button -->
+                            <div class="flex items-end">
+                                <button type="submit"
+                                    class="w-full search-button text-white px-6 py-4 rounded-xl transition-all text-lg font-semibold">
+                                    <i class="fas fa-search mr-2"></i>
+                                    Search Restaurants
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Location Search Form (initially hidden) -->
+                        <form id="locationSearchForm" class="hidden grid md:grid-cols-2 gap-6">
+                            <!-- Location Input -->
+                            <div>
+                                <label class="block text-gray-400 mb-3 text-lg">Location</label>
+                                <div class="flex items-center search-input rounded-xl p-2">
+                                    <i class="fas fa-map-marker-alt text-yellow-400 ml-3"></i>
+                                    <input type="text" id="locationInput"
+                                        placeholder="Enter city, address or place name"
+                                        class="w-full bg-transparent border-none focus:outline-none text-white px-4 py-3">
+                                </div>
+                            </div>
+
+                            <!-- Radius Input -->
+                            <div>
+                                <label class="block text-gray-400 mb-3 text-lg">Search Radius (km)</label>
+                                <div class="flex items-center search-input rounded-xl p-2">
+                                    <i class="fas fa-circle-dot text-yellow-400 ml-3"></i>
+                                    <input type="number" id="locationRadius" min="0.1" max="50" step="0.1" value="5"
+                                        class="w-full bg-transparent border-none focus:outline-none text-white px-4 py-3">
+                                </div>
+                            </div>
+
+                            <!-- Search Button -->
+                            <div class="md:col-span-2 flex items-end">
+                                <button type="submit"
+                                    class="w-full search-button text-white px-6 py-4 rounded-xl transition-all text-lg font-semibold">
+                                    <i class="fas fa-search mr-2"></i>
+                                    Search Restaurants
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Current Location Button -->
+                <div class="text-center mb-8 fade-in-up">
+                    <button id="getCurrentLocation"
+                        class="bg-[#151828] text-white px-6 py-3 rounded-xl hover:bg-[#1f2235] transition-colors border border-gray-700">
+                        <i class="fas fa-location-arrow mr-2"></i>
+                        Use Current Location
+                    </button>
+                </div>
+
+                <!-- Map View -->
+                <div class="fade-in-up mb-12">
+                    <div id="map" class="w-full h-[400px]"></div>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="loading" class="hidden text-center my-8">
+                    <div
+                        class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400">
+                    </div>
+                    <p class="mt-4 text-gray-400 text-xl">Finding the best restaurants for you...</p>
+                </div>
+
+                <!-- Results Count -->
+                <div id="resultsCount" class="hidden text-center mb-8">
+                    <p class="text-gray-300 text-2xl"><span id="restaurantCount">0</span> restaurants found</p>
+                </div>
+
+                <!-- Sorting Controls -->
+                <div id="sortingControls" class="hidden search-card p-6 mb-8">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                        <p class="text-gray-300 text-lg">Sort restaurants by:</p>
+                        <div class="flex flex-wrap gap-3">
+                            <button class="sort-btn bg-[#1f2235] px-5 py-3 rounded-xl transition-all active"
+                                data-sort="distance">
+                                <i class="fas fa-route mr-2"></i>Distance
+                            </button>
+                            <button class="sort-btn bg-[#1f2235] px-5 py-3 rounded-xl transition-all"
+                                data-sort="rating">
+                                <i class="fas fa-star mr-2"></i>Rating
+                            </button>
+                            <button class="sort-btn bg-[#1f2235] px-5 py-3 rounded-xl transition-all" data-sort="name">
+                                <i class="fas fa-font mr-2"></i>Name
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div id="results" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+
+                <!-- No Results Message -->
+                <div id="noResults" class="hidden text-center py-16 fade-in-up">
+                    <i class="fas fa-search text-6xl text-gray-500 mb-6"></i>
+                    <h3 class="text-3xl font-semibold mb-4">No Restaurants Found</h3>
+                    <p class="text-xl text-gray-400">Try increasing your search radius or selecting a different location
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#0A0B1E] text-white py-12 border-t border-gray-800">
+        <div class="container mx-auto px-6 text-center">
+            <div class="logo mx-auto mb-6 justify-center">
+                <i class="fas fa-utensils mr-2"></i>
+                RestaurantPro
+            </div>
+            <p class="text-gray-400">&copy; 2025 RestaurantPro. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Restaurant Card Template -->
+    <template id="restaurant-template">
+        <div class="restaurant-card overflow-hidden hover:shadow-xl transition-all">
+            <img src="" alt="Restaurant"
+                class="w-full h-56 object-cover restaurant-image transition-all duration-500 hover:scale-105">
+            <div class="p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3 class="text-xl font-semibold restaurant-name"></h3>
+                        <p class="text-gray-400 restaurant-cuisine"></p>
+                    </div>
+                    <span class="text-gray-400 restaurant-distance"></span>
+                </div>
+                <div class="flex items-center mb-4">
+                    <div class="flex text-yellow-400 restaurant-stars">
+                        <!-- Stars will be inserted dynamically -->
+                    </div>
+                    <span class="ml-2 text-gray-400 restaurant-rating"></span>
+                </div>
+                <p class="text-gray-300 mb-4 restaurant-address line-clamp-2"></p>
+                <div class="flex flex-wrap gap-2 mb-6 restaurant-features">
+                    <!-- Feature badges will be inserted dynamically -->
+                </div>
+                <a href="#" class="restaurant-link inline-block text-white px-5 py-3 rounded-xl transition-all">
+                    <i class="fas fa-utensils mr-2"></i> View Details
+                </a>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        // Initialize AOS
+        AOS.init();
+
+        // Tab switching functionality
+        const coordsTabBtn = document.getElementById('coordsTabBtn');
+        const locationTabBtn = document.getElementById('locationTabBtn');
+        const coordsSearchForm = document.getElementById('coordsSearchForm');
+        const locationSearchForm = document.getElementById('locationSearchForm');
+
+        coordsTabBtn.addEventListener('click', () => {
+            coordsTabBtn.classList.add('active');
+            locationTabBtn.classList.remove('active');
+            coordsSearchForm.classList.remove('hidden');
+            locationSearchForm.classList.add('hidden');
+        });
+
+        locationTabBtn.addEventListener('click', () => {
+            locationTabBtn.classList.add('active');
+            coordsTabBtn.classList.remove('active');
+            locationSearchForm.classList.remove('hidden');
+            coordsSearchForm.classList.add('hidden');
+        });
+
+        // Initialize map with light theme
+        const map = L.map('map').setView([0, 0], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        let searchCircle;
+        let markers = [];
+        let restaurantData = [];
+        const resultsContainer = document.getElementById('results');
+        const loadingIndicator = document.getElementById('loading');
+        const noResultsMessage = document.getElementById('noResults');
+        const resultsCount = document.getElementById('resultsCount');
+        const restaurantCount = document.getElementById('restaurantCount');
+        const sortingControls = document.getElementById('sortingControls');
+
+        // Sample cuisine types for random assignment
+        const cuisineTypes = [
+            'Italian', 'Chinese', 'Mexican', 'Japanese', 'Indian',
+            'Thai', 'French', 'Greek', 'American', 'Spanish',
+            'Turkish', 'Korean', 'Vietnamese', 'Lebanese', 'Brazilian'
+        ];
+
+        // Sample features for random assignment
+        const features = [
+            'Outdoor Seating', 'Delivery', 'Takeout', 'Reservations',
+            'Vegetarian Options', 'Vegan Options', 'Gluten-Free Options',
+            'Family-Friendly', 'Full Bar', 'Wine List', 'Live Music'
+        ];
+
+        // Get random item from an array
+        function getRandomItem(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        // Get random subset of an array
+        function getRandomSubset(array, max) {
+            const count = Math.floor(Math.random() * max) + 1;
+            const shuffled = [...array].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        // Generate star elements based on rating
+        function generateStars(rating) {
+            const starsContainer = document.createElement('div');
+            starsContainer.className = 'flex text-yellow-400';
+
+            // Full stars
+            const fullStars = Math.floor(rating);
+            for (let i = 0; i < fullStars; i++) {
+                const star = document.createElement('i');
+                star.className = 'fas fa-star';
+                starsContainer.appendChild(star);
+            }
+
+            // Half star
+            if (rating % 1 >= 0.5) {
+                const halfStar = document.createElement('i');
+                halfStar.className = 'fas fa-star-half-alt';
+                starsContainer.appendChild(halfStar);
+            }
+
+            // Empty stars
+            const emptyStars = 5 - Math.ceil(rating);
+            for (let i = 0; i < emptyStars; i++) {
+                const emptyStar = document.createElement('i');
+                emptyStar.className = 'far fa-star';
+                starsContainer.appendChild(emptyStar);
+            }
+
+            return starsContainer;
+        }
+
+        // Format distance
+        function formatDistance(distance) {
+            if (distance < 1) {
+                return `${(distance * 1000).toFixed(0)} m away`;
+            }
+            return `${distance.toFixed(1)} km away`;
+        }
+
+        // Calculate distance between two points
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the Earth in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        // Render restaurant cards
+        function renderRestaurants(restaurants) {
+            resultsContainer.innerHTML = '';
+
+            if (restaurants.length === 0) {
+                noResultsMessage.classList.remove('hidden');
+                resultsCount.classList.add('hidden');
+                sortingControls.classList.add('hidden');
+                return;
+            }
+
+            noResultsMessage.classList.add('hidden');
+            resultsCount.classList.remove('hidden');
+            sortingControls.classList.remove('hidden');
+            restaurantCount.textContent = restaurants.length;
+
+            const template = document.getElementById('restaurant-template');
+
+            restaurants.forEach(restaurant => {
+                const card = document.importNode(template.content, true);
+
+                card.querySelector('.restaurant-image').src = restaurant.image || '/api/placeholder/400/200';
+                card.querySelector('.restaurant-image').alt = restaurant.name;
+                card.querySelector('.restaurant-name').textContent = restaurant.name;
+                card.querySelector('.restaurant-cuisine').textContent = restaurant.cuisine;
+                card.querySelector('.restaurant-distance').textContent = formatDistance(restaurant.distance);
+                card.querySelector('.restaurant-stars').replaceWith(generateStars(restaurant.rating));
+                card.querySelector('.restaurant-rating').textContent = `(${restaurant.rating.toFixed(1)})`;
+                card.querySelector('.restaurant-address').textContent = restaurant.address;
+                card.querySelector('.restaurant-link').href = `/restaurant/${restaurant.id}`;
+
+                // Add feature badges
+                const featuresContainer = card.querySelector('.restaurant-features');
+                restaurant.features.forEach(feature => {
+                    const badge = document.createElement('span');
+                    badge.className = 'bg-[#1f2235] text-gray-300 text-xs px-3 py-1 rounded-full';
+                    badge.textContent = feature;
+                    featuresContainer.appendChild(badge);
+                });
+
+                resultsContainer.appendChild(card);
+            });
+        }
+
+        // Fetch nearby restaurants
+        async function fetchNearbyRestaurants(lat, lng, radius) {
+            // Show loading indicator
+            loadingIndicator.classList.remove('hidden');
+            resultsContainer.innerHTML = '';
+            noResultsMessage.classList.add('hidden');
+            resultsCount.classList.add('hidden');
+            sortingControls.classList.add('hidden');
+
+            // Clear existing markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            // In a real implementation, this would be an API call
+            // For this demo, we'll generate random restaurants
+            const count = Math.floor(Math.random() * 20) + 10; // 10-30 restaurants
+            restaurantData = [];
+
+            for (let i = 0; i < count; i++) {
+                // Generate a random point within the radius
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * radius;
+                const randomRadius = distance * 0.8; // Scale down to ensure it's within visible circle
+
+                // Convert km to lat/lng differences
+                const latDiff = randomRadius / 111.32; // 1 degree lat is approximately 111.32 km
+                const lngDiff = randomRadius / (111.32 * Math.cos(lat * Math.PI / 180));
+
+                // Create random lat/lng within the radius
+                const randomLat = lat + latDiff * Math.cos(angle);
+                const randomLng = lng + lngDiff * Math.sin(angle);
+
+                // Calculate actual distance
+                const actualDistance = calculateDistance(lat, lng, randomLat, randomLng);
+
+                // Create a random restaurant
+                const restaurant = {
+                    id: `rest-${i}`,
+                    name: `Restaurant ${i + 1}`,
+                    cuisine: getRandomItem(cuisineTypes),
+                    rating: (Math.random() * 2 + 3).toFixed(1), // 3.0-5.0 rating
+                    address: `${Math.floor(Math.random() * 999) + 1} Main Street, City`,
+                    features: getRandomSubset(features, 4),
+                    lat: randomLat,
+                    lng: randomLng,
+                    distance: actualDistance,
+                    image: `/api/placeholder/400/200`
+                };
+
+                restaurantData.push(restaurant);
+
+                // Add marker to map
+                const marker = L.marker([randomLat, randomLng]).addTo(map);
+                marker.bindPopup(`<b>${restaurant.name}</b><br>${restaurant.cuisine}`);
+                markers.push(marker);
+            }
+
+            // Sort by distance by default
+            restaurantData.sort((a, b) => a.distance - b.distance);
+
+            // Hide loading indicator after delay to simulate API call
+            setTimeout(() => {
+                loadingIndicator.classList.add('hidden');
+                renderRestaurants(restaurantData);
+            }, 1500);
+
+            // Display search area on map
+            if (searchCircle) {
+                map.removeLayer(searchCircle);
+            }
+            searchCircle = L.circle([lat, lng], {
+                radius: radius * 1000, // Convert km to meters
+                color: '#FF4D4D',
+                fillColor: '#FF4D4D',
+                fillOpacity: 0.1
+            }).addTo(map);
+
+            // Center map on search location
+            map.setView([lat, lng], getZoomLevel(radius));
+        }
+
+        // Get zoom level based on radius
+        function getZoomLevel(radius) {
+            if (radius <= 1) return 15;
+            if (radius <= 3) return 14;
+            if (radius <= 7) return 13;
+            if (radius <= 15) return 12;
+            return 11;
+        }
+
+        // Sorting functionality
+        document.querySelectorAll('.sort-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                // Remove active class from all buttons
+                document.querySelectorAll('.sort-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                // Add active class to clicked button
+                this.classList.add('active');
+
+                const sortBy = this.dataset.sort;
+
+                // Sort restaurants
+                switch (sortBy) {
+                    case 'distance':
+                        restaurantData.sort((a, b) => a.distance - b.distance);
+                        break;
+                    case 'rating':
+                        restaurantData.sort((a, b) => b.rating - a.rating);
+                        break;
+                    case 'name':
+                        restaurantData.sort((a, b) => a.name.localeCompare(b.name));
+                        break;
+                }
+
+                renderRestaurants(restaurantData);
+            });
+        });
+
+        // Handle coordinate search form submission
+        document.getElementById('coordsSearchForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const lat = parseFloat(document.getElementById('latitude').value);
+            const lng = parseFloat(document.getElementById('longitude').value);
+            const radius = parseFloat(document.getElementById('coordRadius').value);
+
+            if (isNaN(lat) || isNaN(lng) || isNaN(radius)) {
+                alert('Please enter valid coordinates and radius');
+                return;
+            }
+
+            fetchNearbyRestaurants(lat, lng, radius);
+        });
+
+        // Handle location search form submission
+        document.getElementById('locationSearchForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const location = document.getElementById('locationInput').value;
+            const radius = parseFloat(document.getElementById('locationRadius').value);
+
+            if (!location || isNaN(radius)) {
+                alert('Please enter a valid location and radius');
+                return;
+            }
+
+            // In a real implementation, geocode the location to get coordinates
+            // For this demo, use random coordinates
+            const lat = (Math.random() * 180) - 90;
+            const lng = (Math.random() * 360) - 180;
+
+            fetchNearbyRestaurants(lat, lng, radius);
+        });
+
+        // Handle current location button
+        document.getElementById('getCurrentLocation').addEventListener('click', function () {
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by your browser');
+                return;
+            }
+
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Getting location...';
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+
+                    // Set values in coordinate form
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+
+                    // Reset button text
+                    document.getElementById('getCurrentLocation').innerHTML =
+                        '<i class="fas fa-location-arrow mr-2"></i> Use Current Location';
+
+                    // Switch to coordinates tab
+                    coordsTabBtn.click();
+
+                    // Fetch nearby restaurants
+                    const radius = parseFloat(document.getElementById('coordRadius').value);
+                    fetchNearbyRestaurants(lat, lng, radius);
+                },
+                (error) => {
+                    alert(`Unable to get your location: ${error.message}`);
+                    document.getElementById('getCurrentLocation').innerHTML =
+                        '<i class="fas fa-location-arrow mr-2"></i> Use Current Location';
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                }
+            );
+        });
+
+        // Initialize with central view
+        map.setView([40.7128, -74.0060], 12); // New York by default
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestaurantPro - Discover Fine Dining</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <style>
+        :root {
+          --primary-gradient: linear-gradient(135deg, #FF4D4D 0%, #F9CB28 100%);
+          --secondary-gradient: linear-gradient(135deg, #4158D0 0%, #C850C0 100%);
+          --accent-gradient: linear-gradient(135deg, #FBAB7E 0%, #F7CE68 100%);
+          --background-dark: #0A0B1E;
+          --card-bg: #151828;
+          --text-bright: #FFFFFF;
+          --text-dim: #8B8D9B;
+          --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+          --hover-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+          --glow: 0 0 20px rgba(255, 77, 77, 0.3);
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Inter', system-ui, sans-serif;
+          background: var(--background-dark);
+          color: var(--text-bright);
+          line-height: 1.6;
+          min-height: 100vh;
+          position: relative;
+          overflow-x: hidden;
+        }
+
+        body::before {
+          content: '';
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            radial-gradient(circle at 10% 20%, rgba(65, 88, 208, 0.15) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(200, 80, 192, 0.15) 0%, transparent 40%);
+          pointer-events: none;
+        }
+
+        .header {
+          background: rgba(21, 24, 40, 0.8);
+          backdrop-filter: blur(20px);
+          position: fixed;
+          width: 100%;
+          z-index: 100;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px 50px;
+          max-width: 1400px;
+          margin: 0 auto;
+        }
+
+        .logo {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 28px;
+          font-weight: 800;
+          background: var(--primary-gradient);
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          text-shadow: var(--glow);
+        }
+
+        .logo:hover {
+          transform: scale(1.05) rotate(-2deg);
+          filter: brightness(1.2);
+        }
+
+        .nav-links a {
+          text-decoration: none;
+          color: var(--text-bright);
+          font-weight: 600;
+          margin-left: 40px;
+          transition: all 0.4s ease;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 16px;
+          padding: 12px 24px;
+          border-radius: 12px;
+          position: relative;
+          background: rgba(255, 255, 255, 0.05);
+          overflow: hidden;
+        }
+
+        .nav-links a::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: var(--primary-gradient);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          z-index: -1;
+        }
+
+        .nav-links a:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--glow);
+        }
+
+        .nav-links a:hover::before {
+          opacity: 1;
+        }
+
+        .hero {
+          padding-top: 120px;
+          min-height: 90vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          position: relative;
+        }
+
+        .hero-content {
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: 80px 20px;
+          position: relative;
+          z-index: 1;
+        }
+
+        .hero h1 {
+          font-size: 72px;
+          background: var(--primary-gradient);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          margin-bottom: 30px;
+          font-weight: 800;
+          text-transform: capitalize;
+          animation: fadeInUp 1s ease-out;
+          letter-spacing: -2px;
+          line-height: 1.2;
+          text-shadow: var(--glow);
+        }
+
+        .hero-description {
+          font-size: 24px;
+          color: var(--text-dim);
+          margin-bottom: 60px;
+          max-width: 800px;
+          margin-left: auto;
+          margin-right: auto;
+          animation: fadeInUp 1s ease-out 0.2s backwards;
+        }
+
+        .feature-cards {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+          gap: 50px;
+          padding: 20px;
+          max-width: 1400px;
+          margin: 0 auto;
+          animation: fadeInUp 1s ease-out 0.4s backwards;
+        }
+
+        .card {
+          background: var(--card-bg);
+          border-radius: 24px;
+          overflow: hidden;
+          box-shadow: var(--card-shadow);
+          transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          position: relative;
+          text-align: center;
+          border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+          transform: translateX(-100%);
+          transition: transform 0.8s ease;
+        }
+
+        .card:hover {
+          transform: translateY(-16px) scale(1.02);
+          box-shadow: var(--hover-shadow);
+          border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .card:hover::before {
+          transform: translateX(100%);
+        }
+
+        .card-icon {
+          height: 200px;
+          background: rgba(255, 255, 255, 0.02);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 56px;
+          position: relative;
+          overflow: hidden;
+          transition: all 0.5s ease;
+        }
+
+        .card:nth-child(1) .card-icon { color: #FF4D4D; text-shadow: 0 0 20px rgba(255, 77, 77, 0.4); }
+        .card:nth-child(2) .card-icon { color: #4158D0; text-shadow: 0 0 20px rgba(65, 88, 208, 0.4); }
+        .card:nth-child(3) .card-icon { color: #FBAB7E; text-shadow: 0 0 20px rgba(251, 171, 126, 0.4); }
+
+        .card:hover .card-icon {
+          transform: scale(1.1);
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card h3 {
+          color: var(--text-bright);
+          margin: 30px 0 20px;
+          font-size: 28px;
+          padding: 0 30px;
+          font-weight: 700;
+          position: relative;
+          z-index: 1;
+        }
+
+        .card p {
+          color: var(--text-dim);
+          padding: 0 30px;
+          font-size: 18px;
+          line-height: 1.7;
+          margin-bottom: 30px;
+          position: relative;
+          z-index: 1;
+        }
+
+        .btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          padding: 16px 32px;
+          color: var(--text-bright);
+          text-decoration: none;
+          border-radius: 16px;
+          font-weight: 600;
+          transition: all 0.4s ease;
+          margin: 20px 0 30px;
+          font-size: 18px;
+          position: relative;
+          background: var(--primary-gradient);
+          overflow: hidden;
+        }
+
+        .btn::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: var(--secondary-gradient);
+          opacity: 0;
+          transition: opacity 0.4s ease;
+          z-index: -1;
+        }
+
+        .btn:hover {
+          transform: scale(1.05);
+          box-shadow: var(--glow);
+        }
+
+        .btn:hover::before {
+          opacity: 1;
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 768px) {
+          .nav {
+            padding: 15px 20px;
+          }
+          
+          .hero h1 {
+            font-size: 42px;
+            letter-spacing: -1px;
+          }
+          
+          .hero-description {
+            font-size: 18px;
+          }
+          
+          .feature-cards {
+            grid-template-columns: 1fr;
+            gap: 30px;
+          }
+          
+          .nav-links {
+            display: none;
+          }
+
+          .card:hover {
+            transform: translateY(-8px) scale(1.01);
+          }
+        }
+
+        /* Animated background elements */
+        .bg-elements {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .bg-element {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(40px);
+          opacity: 0.1;
+          animation: float 6s infinite;
+        }
+
+        .bg-element:nth-child(1) {
+          top: 20%;
+          left: 10%;
+          width: 300px;
+          height: 300px;
+          background: var(--primary-gradient);
+          animation-delay: 0s;
+        }
+
+        .bg-element:nth-child(2) {
+          top: 60%;
+          right: 15%;
+          width: 250px;
+          height: 250px;
+          background: var(--secondary-gradient);
+          animation-delay: -2s;
+        }
+
+        .bg-element:nth-child(3) {
+          bottom: 10%;
+          left: 20%;
+          width: 200px;
+          height: 200px;
+          background: var(--accent-gradient);
+          animation-delay: -4s;
+        }
+
+        /* Footer styling */
+        footer {
+          background: var(--card-bg);
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          position: relative;
+          z-index: 10;
+        }
+
+        footer h4 {
+          background: var(--primary-gradient);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          font-weight: 700;
+        }
+
+        footer a {
+          transition: all 0.3s ease;
+        }
+
+        footer a:hover {
+          color: #FF4D4D !important;
+          transform: translateX(5px);
+        }
+
+        /* Search bar styling */
+        .search-container {
+          position: relative;
+          max-width: 800px;
+          margin: 0 auto;
+          z-index: 2;
+        }
+
+        .search-bar {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: var(--card-shadow);
+          border-radius: 20px;
+          overflow: hidden;
+          transition: all 0.4s ease;
+        }
+
+        .search-bar:hover {
+          box-shadow: var(--glow);
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .search-bar input {
+          background: transparent;
+          color: var(--text-bright);
+          font-size: 18px;
+        }
+
+        .search-bar button {
+          background: var(--primary-gradient);
+          transition: all 0.4s ease;
+        }
+
+        .search-bar button:hover {
+          transform: scale(1.05);
+          filter: brightness(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Elements -->
+    <div class="bg-elements">
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+    </div>
+
+   <!-- Elegant Header with Enhanced Navigation -->
+<header class="header">
+  <div class="nav">
+      <a href="#" class="logo" style="margin-right: auto; margin-left: -100px;">
+          <i class="fas fa-utensils mr-2"></i>
+          <span>RestaurantPro</span>
+      </a>
+      
+      <!-- Desktop Navigation -->
+      <div class="nav-links hidden md:flex" style="margin-left: 100px;">
+          <a href="index.html" style="margin-left: 30px;"><i class="fas fa-home"></i><span>Home</span></a>
+          <a href="nearby-search.html" style="margin-left: 30px;"><i class="fas fa-map-marker-alt"></i><span>Search Nearby</span></a>
+          <a href="image-search.html" style="margin-left: 30px;"><i class="fas fa-camera"></i><span>Image Search</span></a>
+          <a href="restaurant-list.html" style="margin-left: 30px;"><i class="fas fa-list"></i><span>All Restaurants</span></a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button id="mobileMenuBtn" class="md:hidden text-white focus:outline-none">
+          <i class="fas fa-bars text-2xl"></i>
+      </button>
+  </div>
+
+  <!-- Mobile Navigation Menu -->
+  <div id="mobileMenu" class="hidden md:hidden mt-4 pb-4 px-6">
+      <nav class="flex flex-col space-y-4">
+          <a href="index.html" class="text-white hover:text-yellow-400 transition-colors py-2 px-4 rounded-lg bg-[rgba(255,255,255,0.05)]">Home</a>
+          <a href="nearby-search" class="text-white hover:text-yellow-400 transition-colors py-2 px-4 rounded-lg bg-[rgba(255,255,255,0.05)]">Nearby Search</a>
+          <a href="image-search.html" class="text-white hover:text-yellow-400 transition-colors py-2 px-4 rounded-lg bg-[rgba(255,255,255,0.05)]">Image Search</a>
+          <a href="restaurant-list.html" class="text-white hover:text-yellow-400 transition-colors py-2 px-4 rounded-lg bg-[rgba(255,255,255,0.05)]">All Restaurants</a>
+      </nav>
+  </div>
+</header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 data-aos="fade-up" data-aos-duration="1000">Discover Culinary Delights</h1>
+            <p class="hero-description" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
+                Experience extraordinary flavors and find your next favorite dining destination.
+            </p>
+
+            <!-- Feature Cards -->
+            <div class="feature-cards mt-16">
+                <!-- Nearby Restaurants Card -->
+                <div class="card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="card-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3>Nearby Restaurants</h3>
+                    <p>Discover top-rated dining spots in your vicinity with real-time availability.</p>
+                    <a href="nearby-search" class="btn">
+                        <i class="fas fa-compass"></i>
+                        Explore Nearby
+                    </a>
+                </div>
+
+                <!-- Image Search Card -->
+                <div class="card" data-aos="fade-up" data-aos-delay="500">
+                    <div class="card-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3>Image Search</h3>
+                    <p>Find restaurants by uploading food images or browsing popular dishes.</p>
+                    <a href="image-search.html" class="btn">
+                        <i class="fas fa-images"></i>
+                        Search by Image
+                    </a>
+                </div>
+
+                <!-- Restaurant Directory Card -->
+                <div class="card" data-aos="fade-up" data-aos-delay="600">
+                    <div class="card-icon">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <h3>Restaurant Directory</h3>
+                    <p>Browse our curated collection of premium dining establishments.</p>
+                    <a href="restaurant-list.html" class="btn">
+                        <i class="fas fa-book-open"></i>
+                        View Directory
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Footer -->
+    <footer class="py-12 mt-20">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <!-- Company Info -->
+                <div data-aos="fade-up" data-aos-delay="100">
+                    <h4 class="text-xl font-semibold mb-4">About RestaurantPro</h4>
+                    <p class="text-gray-400">Connecting food lovers with exceptional dining experiences since 2025.</p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div data-aos="fade-up" data-aos-delay="200">
+                    <h4 class="text-xl font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-yellow-400 transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 transition-colors">Contact</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 transition-colors">Terms of Service</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div data-aos="fade-up" data-aos-delay="300">
+                    <h4 class="text-xl font-semibold mb-4">Contact Us</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><i class="fas fa-envelope mr-2"></i> info@restaurantpro.com</li>
+                        <li><i class="fas fa-phone mr-2"></i> +91 91826 95474</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i> India , Andhra Pradesh, Visakhapatnam</li>
+                    </ul>
+                </div>
+
+                <!-- Social Links -->
+                <div data-aos="fade-up" data-aos-delay="400">
+                    <h4 class="text-xl font-semibold mb-4">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">
+                            <i class="fab fa-twitter text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">
+                            <i class="fab fa-instagram text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">
+                            <i class="fab fa-facebook text-2xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">
+                            <i class="fab fa-linkedin text-2xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 text-center">
+                <p class="text-gray-500">&copy; 2025 RestaurantPro. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize AOS
+        AOS.init();
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenuBtn.querySelector('i').classList.toggle('fa-bars');
+            mobileMenuBtn.querySelector('i').classList.toggle('fa-times');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestaurantPro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #FF4D4D 0%, #F9CB28 100%);
+            --secondary-gradient: linear-gradient(135deg, #4158D0 0%, #C850C0 100%);
+            --accent-gradient: linear-gradient(135deg, #FBAB7E 0%, #F7CE68 100%);
+            --background-dark: #0A0B1E;
+            --card-bg: #151828;
+            --text-bright: #FFFFFF;
+            --text-dim: #8B8D9B;
+            --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            --hover-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            --glow: 0 0 20px rgba(255, 77, 77, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--background-dark);
+            color: var(--text-bright);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 10% 20%, rgba(65, 88, 208, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(200, 80, 192, 0.15) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .header {
+            background: rgba(21, 24, 40, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link {
+            text-decoration: none;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+            border-radius: 8px;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
+        }
+
+        .nav-link:hover::before {
+            opacity: 1;
+        }
+
+        .card-custom {
+            background: var(--card-bg);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-custom::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.8s ease;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-16px) scale(1.02);
+            box-shadow: var(--hover-shadow);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .card-custom:hover::before {
+            transform: translateX(100%);
+        }
+
+        .gradient-btn {
+            background: var(--primary-gradient);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gradient-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--secondary-gradient);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
+        }
+
+        .gradient-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--glow);
+        }
+
+        .gradient-btn:hover::before {
+            opacity: 1;
+        }
+
+        .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: var(--glow);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .bg-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .bg-element {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.1;
+            animation: float 6s infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+            flex-direction: column;
+        }
+
+        .loading-spinner {
+            border: 6px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 6px solid var(--text-bright);
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background Elements -->
+    <div class="bg-elements">
+        <div class="bg-element"
+            style="top: 20%; left: 10%; width: 300px; height: 300px; background: var(--primary-gradient); animation-delay: 0s;">
+        </div>
+        <div class="bg-element"
+            style="top: 60%; right: 15%; width: 250px; height: 250px; background: var(--secondary-gradient); animation-delay: -2s;">
+        </div>
+        <div class="bg-element"
+            style="bottom: 10%; left: 20%; width: 200px; height: 200px; background: var(--accent-gradient); animation-delay: -4s;">
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="fixed w-full z-50 header">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-utensils text-yellow-400 text-3xl transform hover:rotate-12 transition-transform"></i>
+                    <h1 class="text-3xl font-bold gradient-text tracking-tight">
+                        RestaurantPro
+                    </h1>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="index.html" class="nav-link text-white px-6 py-3 rounded-lg flex items-center space-x-2">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="nearby-search.html"
+                        class="nav-link text-white px-6 py-3 rounded-lg flex items-center space-x-2">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Nearby</span>
+                    </a>
+                    <a href="image-search.html"
+                        class="nav-link text-white px-6 py-3 rounded-lg flex items-center space-x-2">
+                        <i class="fas fa-camera"></i>
+                        <span>Image Search</span>
+                    </a>
+                    <a href="restaurant-list.html"
+                        class="nav-link text-white px-6 py-3 rounded-lg flex items-center space-x-2">
+                        <i class="fas fa-utensils"></i>
+                        <span>Restaurants</span>
+                    </a>
+                </nav>
+
+                <button id="mobileMenuBtn" class="md:hidden text-white focus:outline-none">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+
+            <div id="mobileMenu" class="hidden md:hidden mt-4 pb-4">
+                <nav class="flex flex-col space-y-4">
+                    <a href="index.html"
+                        class="nav-link text-white hover:text-yellow-400 transition-colors py-2 px-4">Home</a>
+                    <a href="nearby-search.html"
+                        class="nav-link text-white hover:text-yellow-400 transition-colors py-2 px-4">Nearby</a>
+                    <a href="image-search.html"
+                        class="nav-link text-white hover:text-yellow-400 transition-colors py-2 px-4">Image Search</a>
+                    <a href="restaurant-list.html"
+                        class="nav-link text-white hover:text-yellow-400 transition-colors py-2 px-4">Restaurants</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Loading Section -->
+    <div id="loading" class="loading pt-24">
+        <div class="loading-spinner"></div>
+        <p class="text-2xl">Loading restaurant information...</p>
+    </div>
+
+    <!-- Main Content -->
+    <main id="mainContent" class="pt-24 hidden">
+        <!-- Hero Section -->
+        <div class="relative h-[70vh] min-h-[500px]">
+            <img id="restaurantImage" src="/api/placeholder/1920/1080" alt="Restaurant Interior" class="w-full h-full object-cover brightness-50">
+            <div class="absolute inset-0 bg-gradient-to-t from-[var(--background-dark)] to-transparent"></div>
+            <div class="absolute inset-0 flex items-end pb-16">
+                <div class="container mx-auto px-6" data-aos="fade-up">
+                    <div class="flex flex-col md:flex-row justify-between items-end">
+                        <div class="fade-in-up">
+                            <h1 id="restaurantName" class="text-5xl md:text-6xl font-bold mb-6 gradient-text">Loading...</h1>
+                            <div class="flex items-center space-x-4 mb-4">
+                                <span id="cuisineType" class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-semibold">Loading...</span>
+                                <span id="rating" class="text-yellow-400 flex items-center"><i class="fas fa-star mr-2"></i> Loading...</span>
+                            </div>
+                            <p id="address" class="text-gray-300 text-lg"><i class="fas fa-map-marker-alt mr-2"></i>Loading...</p>
+                        </div>
+                        <div class="flex space-x-4 mt-6 md:mt-0">
+                            <button class="gradient-btn text-white px-6 py-3 rounded-lg">
+                                <i class="fas fa-bookmark mr-2"></i>Save
+                            </button>
+                            <button class="gradient-btn bg-gradient-to-r from-[#28B463] to-[#2ECC71] text-white px-6 py-3 rounded-lg">
+                                <i class="fas fa-share-alt mr-2"></i>Share
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Restaurant Details -->
+        <div class="container mx-auto px-6 py-16">
+            <!-- Quick Info -->
+            <div class="grid md:grid-cols-3 gap-8 mb-16" data-aos="fade-up">
+                <div class="card-custom p-8">
+                    <h3 class="text-2xl font-semibold mb-6 gradient-text"><i class="far fa-clock mr-3"></i>Hours</h3>
+                    <div id="hoursContainer" class="space-y-4 text-gray-300">
+                        <!-- Hours will be populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="card-custom p-8">
+                    <h3 class="text-2xl font-semibold mb-6 gradient-text"><i class="fas fa-info-circle mr-3"></i>Details
+                    </h3>
+                    <div id="detailsContainer" class="space-y-4 text-gray-300">
+                        <!-- Details will be populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="card-custom p-8">
+                    <h3 class="text-2xl font-semibold mb-6 gradient-text"><i class="fas fa-phone mr-3"></i>Contact</h3>
+                    <div id="contactContainer" class="space-y-4 text-gray-300">
+                        <!-- Contact info will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Section -->
+            <div class="mb-20" data-aos="fade-up">
+                <h2 class="text-4xl font-bold mb-10 gradient-text">Popular Dishes</h2>
+                <div id="menuContainer" class="grid md:grid-cols-3 gap-8">
+                    <!-- Menu items will be populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Reviews Section -->
+            <div data-aos="fade-up" class="mb-20">
+                <div class="flex justify-between items-center mb-10">
+                    <h2 class="text-4xl font-bold gradient-text">Customer Reviews</h2>
+                    <button class="gradient-btn bg-gradient-to-r from-[#4A0D66] to-[#8B2232] text-white px-8 py-4 rounded-lg font-semibold">
+                        Write a Review
+                    </button>
+                </div>
+
+                <div id="reviewsContainer" class="space-y-8">
+                    <!-- Reviews will be populated dynamically -->
+                </div>
+
+                <!-- Load More Reviews Button -->
+                <div class="text-center mt-12">
+                    <button class="card-custom text-white px-10 py-4 rounded-lg hover:bg-[#1a1d30] transition-colors inline-block">
+                        Load More Reviews
+                    </button>
+                </div>
+            </div>
+
+            <!-- Location Section -->
+            <div class="mt-20" data-aos="fade-up">
+                <h2 class="text-4xl font-bold mb-10 gradient-text">Location & Directions</h2>
+                <div class="card-custom p-8">
+                    <div class="mb-8">
+                        <img id="mapImage" src="/api/placeholder/800/400" alt="Map" class="w-full h-80 object-cover rounded-lg">
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-12">
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-6 gradient-text">Address</h3>
+                            <p id="fullAddress" class="text-gray-300 mb-6 text-lg">Loading address information...</p>
+                            <button class="gradient-btn bg-gradient-to-r from-[#28B463] to-[#2ECC71] text-white px-8 py-4 rounded-lg font-semibold">
+                                <i class="fas fa-directions mr-3"></i>Get Directions
+                            </button>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-semibold mb-6 gradient-text">Parking Information</h3>
+                            <ul id="parkingInfo" class="text-gray-300 space-y-4 text-lg">
+                                <!-- Parking info will be populated dynamically -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="hidden pt-36 text-center container mx-auto px-6">
+        <div class="card-custom p-12 max-w-2xl mx-auto">
+            <i class="fas fa-exclamation-triangle text-yellow-400 text-6xl mb-6"></i>
+            <h2 class="text-3xl font-bold mb-6">Oops! Something went wrong</h2>
+            <p id="errorText" class="text-gray-300 text-xl mb-8">We couldn't load the restaurant information.</p>
+            <button onclick="window.location.href='index.html'" class="gradient-btn text-white px-8 py-4 rounded-lg font-semibold">
+                <i class="fas fa-home mr-3"></i>Return to Home
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[var(--card-bg)] text-white py-16 mt-20 border-t border-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <div>
+                    <h4 class="text-2xl font-semibold mb-6 gradient-text">About RestaurantPro</h4>
+                    <p class="text-gray-400 text-lg">Connecting food lovers with exceptional dining experiences since
+                        2024.</p>
+                </div>
+
+                <div>
+                    <h4 class="text-2xl font-semibold mb-6 gradient-text">Quick Links</h4>
+                    <ul class="space-y-3 text-gray-400">
+                        <li><a href="#" class="hover:text-yellow-400 transition-colors text-lg">About Us</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 transition-colors text-lg">Contact</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 transition-colors text-lg">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-yellow-400 transition-colors text-lg">Terms of Service</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-2xl font-semibold mb-6 gradient-text">Contact Us</h4>
+                    <ul class="space-y-3 text-gray-400">
+                        <li class="text-lg"><i class="fas fa-envelope mr-3"></i> info@restaurantpro.com</li>
+                        <li class="text-lg"><i class="fas fa-phone mr-3"></i> +1 (555) 123-4567</li>
+                        <li class="text-lg"><i class="fas fa-map-marker-alt mr-3"></i> New York, NY 10001</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-2xl font-semibold mb-6 gradient-text">Follow Us</h4>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">
+                            <i class="fab fa-twitter text-3xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">
+                            <i class="fab fa-instagram text-3xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">
+                            <i class="fab fa-facebook text-3xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-yellow-400 transition-colors">
+                            <i class="fab fa-linkedin text-3xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 text-center">
+                <p class="text-gray-500">&copy; 2024 RestaurantPro. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize AOS
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 1200,
+                once: false,
+                mirror: true
+            });
+
+            // Mobile Menu Toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenuBtn.querySelector('i').classList.toggle('fa-bars');
+                mobileMenuBtn.querySelector('i').classList.toggle('fa-times');
+            });
+
+            // Get restaurant ID from URL
+            const urlPath = window.location.pathname;
+            const pathSegments = urlPath.split('/');
+            const restaurantId = pathSegments[pathSegments.length - 1];
+
+            // Fetch restaurant data
+            fetchRestaurantData(restaurantId);
+        });
+
+        // Fetch restaurant data from API
+        function fetchRestaurantData(restaurantId) {
+            const apiUrl = `http://127.0.0.1:5000/restaurant/${restaurantId}`;
+            
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Hide loading indicator and show content
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('mainContent').classList.remove('hidden');
+                    
+                    // Populate restaurant data
+                    populateRestaurantData(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching restaurant data:', error);
+                    document.getElementById('loading').classList.add('hidden');
+                    document.getElementById('errorMessage').classList.remove('hidden');
+                    document.getElementById('errorText').textContent = 'Unable to load restaurant information. Please try again later.';
+                });
+        }
+
+        // Populate restaurant data in the UI
+        function populateRestaurantData(restaurant) {
+            // Set title
+            document.title = `${restaurant.name} - RestaurantPro`;
+            
+            // Header section
+            document.getElementById('restaurantName').textContent = restaurant.name || 'Restaurant Name';
+            document.getElementById('cuisineType').textContent = restaurant.cuisine || 'Cuisine Type';
+            document.getElementById('rating').innerHTML = `<i class="fas fa-star mr-2"></i> ${restaurant.rating || '0'} (${restaurant.reviewCount || '0'} reviews)`;
+            document.getElementById('address').innerHTML = `<i class="fas fa-map-marker-alt mr-2"></i>${restaurant.address || 'Address unavailable'}`;
+            
+            // Set restaurant image if available
+            if (restaurant.image) {
+                document.getElementById('restaurantImage').src = restaurant.image;
+            }
+            
+            // Hours section
+            const hoursContainer = document.getElementById('hoursContainer');
+            hoursContainer.innerHTML = '';
+            
+            if (restaurant.hours && restaurant.hours.length > 0) {
+                restaurant.hours.forEach(hour => {
+                    const hourElement = document.createElement('p');
+                    hourElement.className = 'flex justify-between';
+                    hourElement.innerHTML = `<span>${hour.days}</span><span>${hour.times}</span>`;
+                    hoursContainer.appendChild(hourElement);
+                });
+            } else {
+                // Default hours if not provided
+                hoursContainer.innerHTML = `
+                    <p class="flex justify-between">
+                        <span>Monday - Thursday</span>
+                        <span>11:00 AM - 10:00 PM</span>
+                    </p>
+                    <p class="flex justify-between">
+                        <span>Friday - Saturday</span>
+                        <span>11:00 AM - 11:00 PM</span>
+                    </p>
+                    <p class="flex justify-between">
+                        <span>Sunday</span>
+                        <span>12:00 PM - 9:00 PM</span>
+                    </p>
+                `;
+            }
+            
+            // Details section
+            const detailsContainer = document.getElementById('detailsContainer');
+            detailsContainer.innerHTML = `
+                <p><i class="fas fa-dollar-sign mr-3"></i>Price Range: ${restaurant.priceRange || '$-$$$'}</p>
+                ${restaurant.features ? restaurant.features.map(feature => `<p><i class="fas fa-check mr-3"></i>${feature}</p>`).join('') : ''}
+            `;
+            
+            if (!restaurant.features || restaurant.features.length === 0) {
+                detailsContainer.innerHTML += `
+                    <p><i class="fas fa-users mr-3"></i>Good for Groups</p>
+                    <p><i class="fas fa-wifi mr-3"></i>Free WiFi</p>
+                    <p><i class="fas fa-parking mr-3"></i>Street Parking</p>
+                `;
+            }
+            
+            // Contact section
+            const contactContainer = document.getElementById('contactContainer');
+            contactContainer.innerHTML = `
+                <p><i class="fas fa-phone-alt mr-3"></i>${restaurant.phone || 'Phone unavailable'}</p>
+                <p><i class="fas fa-globe mr-3"></i>${restaurant.website || 'Website unavailable'}</p>
+                <p><i class="fas fa-envelope mr-3"></i>${restaurant.email || 'Email unavailable'}</p>
+                <button class="mt-6 w-full gradient-btn py-3 px-6 rounded-lg text-white font-semibold">
+                    Make Reservation
+                </button>
+            `;
+            
+            // Menu section
+            const menuContainer = document.getElementById('menuContainer');
+            menuContainer.innerHTML = '';
+            
+            if (restaurant.popularDishes && restaurant.popularDishes.length > 0) {
+                restaurant.popularDishes.forEach(dish => {
+                    menuContainer.innerHTML += `
+                        <div class="card-custom overflow-hidden">
+                            <img src="${dish.image || '/api/placeholder/400/300'}" alt="${dish.name}" class="w-full h-56 object-cover">
+                            <div class="p-8">
+                                <h3 class="text-2xl font-semibold mb-3">${dish.name}</h3>
+                                <p class="text-gray-400 mb-6">${dish.description}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-yellow-400 font-semibold text-xl">${dish.price}</span>
+                                    <button class="gradient-btn text-white px-6 py-3 rounded-lg text-sm font-semibold">
+                                        Order Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                // Default dishes if not provided
+                const defaultDishes = [
+                    {
+                        name: "Signature Dish 1",
+                        description: "Delicious ingredients prepared to perfection",
+                        price: "$18.99"
+                    },
+                    {
+                        name: "Signature Dish 2",
+                        description: "Our chef's special creation with premium ingredients",
+                        price: "$22.99"
+                    },
+                    {
+                        name: "Signature Dessert",
+                        description: "A sweet treat to end your meal on a high note",
+                        price: "$9.99"
+                    }
+                ];
+                
+                defaultDishes.forEach(dish => {
+                    menuContainer.innerHTML += `
+                        <div class="card-custom overflow-hidden">
+                            <img src="/api/placeholder/400/300" alt="${dish.name}" class="w-full h-56 object-cover">
+                            <div class="p-8">
+                                <h3 class="text-2xl font-semibold mb-3">${dish.name}</h3>
+                                <p class="text-gray-400 mb-6">${dish.description}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-yellow-400 font-semibold text-xl">${dish.price}</span>
+                                    <button class="gradient-btn text-white px-6 py-3 rounded-lg text-sm font-semibold">
+                                        Order Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Reviews section
+            const reviewsContainer = document.getElementById('reviewsContainer');
+            reviewsContainer.innerHTML = '';
+            
+            if (restaurant.reviews && restaurant.reviews.length > 0) {
+                restaurant.reviews.forEach(review => {
+                    // Generate stars based on rating
+                    let starsHtml = '';
+                    const fullStars = Math.floor(review.rating);
+                    const hasHalfStar = review.rating % 1 >= 0.5;
+                    
+                    for (let i = 0; i < fullStars; i++) {
+                        starsHtml += '<i class="fas fa-star text-yellow-400"></i>';
+                    }
+                    
+                    if (hasHalfStar) {
+                        starsHtml += '<i class="fas fa-star-half-alt text-yellow-400"></i>';
+                    }
+                    
+                    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+                    for (let i = 0; i < emptyStars; i++) {
+                        starsHtml += '<i class="far fa-star text-yellow-400"></i>';
+                    }
+                    
+                    reviewsContainer.innerHTML += `
+                        <div class="card-custom p-8">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex items-center">
+                                    <img src="${review.userImage || '/api/placeholder/64/64'}" alt="${review.userName}" class="w-12 h-12 rounded-full mr-4">
+                                    <div>
+                                        <h4 class="text-xl font-semibold">${review.userName}</h4>
+                                        <p class="text-gray-400 text-sm">${review.date || 'Recent'}</p>
+                                    </div>
+                                </div>
+                                <div class="flex">
+                                    ${starsHtml}
+                                </div>
+                            </div>
+                            <p class="text-gray-300">${review.text}</p>
+                            <div class="flex space-x-4 mt-6">
+                                <button class="flex items-center text-gray-400 hover:text-yellow-400 transition-colors">
+                                    <i class="far fa-thumbs-up mr-2"></i> Helpful (${review.helpfulCount || 0})
+                                </button>
+                                <button class="flex items-center text-gray-400 hover:text-yellow-400 transition-colors">
+                                    <i class="far fa-comment mr-2"></i> Reply
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                // Default reviews if not provided
+                const defaultReviews = [
+                    {
+                        userName: "John Doe",
+                        rating: 4.5,
+                        text: "Amazing food and atmosphere! The service was excellent and the menu offers a great variety. Will definitely be coming back soon.",
+                        date: "2 weeks ago",
+                        helpfulCount: 12
+                    },
+                    {
+                        userName: "Sarah Smith",
+                        rating: 5,
+                        text: "One of the best dining experiences I've had in a long time. Everything from the appetizers to the desserts was absolutely perfect.",
+                        date: "1 month ago",
+                        helpfulCount: 24
+                    }
+                ];
+                
+                defaultReviews.forEach(review => {
+                    // Generate stars based on rating
+                    let starsHtml = '';
+                    const fullStars = Math.floor(review.rating);
+                    const hasHalfStar = review.rating % 1 >= 0.5;
+                    
+                    for (let i = 0; i < fullStars; i++) {
+                        starsHtml += '<i class="fas fa-star text-yellow-400"></i>';
+                    }
+                    
+                    if (hasHalfStar) {
+                        starsHtml += '<i class="fas fa-star-half-alt text-yellow-400"></i>';
+                    }
+                    
+                    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+                    for (let i = 0; i < emptyStars; i++) {
+                        starsHtml += '<i class="far fa-star text-yellow-400"></i>';
+                    }
+                    
+                    reviewsContainer.innerHTML += `
+                        <div class="card-custom p-8">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex items-center">
+                                    <img src="/api/placeholder/64/64" alt="${review.userName}" class="w-12 h-12 rounded-full mr-4">
+                                    <div>
+                                        <h4 class="text-xl font-semibold">${review.userName}</h4>
+                                        <p class="text-gray-400 text-sm">${review.date}</p>
+                                    </div>
+                                </div>
+                                <div class="flex">
+                                    ${starsHtml}
+                                </div>
+                            </div>
+                            <p class="text-gray-300">${review.text}</p>
+                            <div class="flex space-x-4 mt-6">
+                                <button class="flex items-center text-gray-400 hover:text-yellow-400 transition-colors">
+                                    <i class="far fa-thumbs-up mr-2"></i> Helpful (${review.helpfulCount})
+                                </button>
+                                <button class="flex items-center text-gray-400 hover:text-yellow-400 transition-colors">
+                                    <i class="far fa-comment mr-2"></i> Reply
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Location section
+            document.getElementById('fullAddress').textContent = restaurant.fullAddress || restaurant.address || 'Address unavailable';
+            
+            // Parking information
+            const parkingInfo = document.getElementById('parkingInfo');
+            parkingInfo.innerHTML = '';
+            
+            if (restaurant.parking && restaurant.parking.length > 0) {
+                restaurant.parking.forEach(info => {
+                    parkingInfo.innerHTML += `<li><i class="fas fa-check-circle mr-3 text-green-500"></i>${info}</li>`;
+                });
+            } else {
+                // Default parking info
+                parkingInfo.innerHTML = `
+                    <li><i class="fas fa-check-circle mr-3 text-green-500"></i>Street parking available</li>
+                    <li><i class="fas fa-check-circle mr-3 text-green-500"></i>Public parking garage within 2 blocks</li>
+                    <li><i class="fas fa-check-circle mr-3 text-green-500"></i>Valet parking on weekends</li>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
